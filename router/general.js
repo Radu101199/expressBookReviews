@@ -30,37 +30,132 @@ public_users.post("/register", (req,res) => {
 });
 
 // Get the book list available in the shop
-public_users.get('/',function (req, res) {
-  //Write your code here
-  res.send(JSON.stringify(books,null,4));
+// public_users.get('/',function (req, res) {
+//   //Write your code here
+//   res.send(JSON.stringify(books,null,4));
+// });
+// Route to get the list of books using async/await
+public_users.get('/', async (req, res) => {
+    try {
+        const books = await getBooks();
+        res.json(books);
+    } catch (err) {
+        res.status(500).json({ error: "An error occurred" });
+    }
 });
+// Mock function to simulate data fetching
+const getBooks = () => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve(books);
+        }, 1000); 
+    });
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+
 
 // Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
-  //Write your code here
-  const isbn = req.params.isbn;
-  res.send(books[isbn]);
- });
-  
-// Get book details based on author
-public_users.get('/author/:author',function (req, res) {
-  //Write your code here
-  const author = req.params.author;
-  let bookArray = Object.values(books);
-  let filtered_books = bookArray.filter((book) => book.author === author);
-  res.send(filtered_books);
+// public_users.get('/isbn/:isbn',function (req, res) {
+//   //Write your code here
+//   const isbn = req.params.isbn;
+//   res.send(books[isbn]);
+//  });
 
+// Mock function to simulate fetching book details
+const getBookByISBN = (isbn) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            const book = books[isbn];
+            if (book) {
+                resolve(book);
+            } else {
+                reject(new Error('Book not found'));
+            }
+        }, 1000); // Simulate delay
+    });
+};
+
+// Route to get book details based on ISBN using async/await
+public_users.get('/isbn/:isbn', async (req, res) => {
+    const isbn = req.params.isbn;
+    try {
+        const book = await getBookByISBN(isbn);
+        res.json(book);
+    } catch (err) {
+        res.status(404).json({ error: err.message });
+    }
 });
+
+
+///////////////////////////////////////////////////////////////////////////////
+
+
+// Get book details based on author
+// public_users.get('/author/:author',function (req, res) {
+//   //Write your code here
+//   const author = req.params.author;
+//   let bookArray = Object.values(books);
+//   let filtered_books = bookArray.filter((book) => book.author === author);
+//   res.send(filtered_books);
+// });
+// Mock function to simulate fetching books by author
+const getBooksByAuthor = (author) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            const bookArray = Object.values(books);
+            const filteredBooks = bookArray.filter((book) => book.author === author);
+            resolve(filteredBooks);
+        }, 1000); // Simulate delay
+    });
+};
+
+// Route to get book details based on author using async/await
+public_users.get('/author/:author', async (req, res) => {
+    const author = req.params.author;
+    try {
+        const filteredBooks = await getBooksByAuthor(author);
+        res.json(filteredBooks);
+    } catch (err) {
+        res.status(500).json({ error: "An error occurred" });
+    }
+});
+
+
+///////////////////////////////////////////////////////////////////////////////
+
 
 // Get all books based on title
-public_users.get('/title/:title',function (req, res) {
-  //Write your code here
-  const title = req.params.title;
-  let bookArray = Object.values(books);
-  let filtered_books = bookArray.filter((book) => book.title === title);
-  res.send(filtered_books);
-});
+// public_users.get('/title/:title',function (req, res) {
+//   //Write your code here
+//   const title = req.params.title;
+//   let bookArray = Object.values(books);
+//   let filtered_books = bookArray.filter((book) => book.title === title);
+//   res.send(filtered_books);
+// });
 
+const getBooksByTitle = (title) =>{
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            const bookArray = Object.values(books);
+            const filteredBooks = bookArray.filter((book) => book.title === title);
+            resolve(filteredBooks);
+        }, 1000);
+    });
+};
+
+public_users.get('/title/:title', async (req, res) => {
+    const title = req.params.titlel
+    try{
+        const filteredBooks = await getBooksByTitle(title);
+        res.json(filteredBooks);
+    } catch(err) {
+        res.status(500).json({ error: "An error occured"});
+    }
+})
+
+///////////////////////////////////////////////////////////////////////////////
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
   //Write your code here
